@@ -19,8 +19,7 @@
     <script type="module">
       import {
         ViewerApp,
-        DefaultViewerParams,
-        SpeckleLoader,
+        SpeckleLoader
       } from "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.min.js";
 
       window.onload = async () => {
@@ -30,15 +29,13 @@
 
         const loader = new SpeckleLoader(app.getWorld());
         await loader.loadStream({
-          streamId: "8f8ced29b4",      // <-- substitua se for outro ID
-          objectId: "f22627d137"       // <-- substitua se for outro objeto
+          streamId: "8f8ced29b4",
+          objectId: "f22627d137"
         });
 
-        // Quando clicar num objeto 3D
         app.on("select", (event) => {
-          const selectedId = event?.data?.[0]; // ID do objeto selecionado
+          const selectedId = event?.data?.[0];
           if (selectedId) {
-            // Envia via postMessage para o parent (iframe ou quem estiver escutando)
             window.parent.postMessage(
               { type: "objectClicked", id: selectedId },
               "*"
