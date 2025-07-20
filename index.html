@@ -5,44 +5,39 @@
     <title>Visualizador Speckle 3D</title>
     <style>
       html, body {
-        margin: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
+        margin: 0; height: 100%; width: 100%; overflow: hidden;
       }
       #renderer {
-        width: 100%;
-        height: 100%;
+        width: 100%; height: 100%;
       }
     </style>
   </head>
   <body>
     <div id="renderer"></div>
 
-    <!-- Carrega o Speckle Viewer UMD dinamicamente -->
     <script>
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.umd.js";
-      script.onload = async () => {
+      script.onload = function() {
         const container = document.getElementById("renderer");
-        const app = new window.Speckle.ViewerApp(container); // Agora garantido
-
-        await app.init();
-
-        const loader = new window.Speckle.SpeckleLoader(app.getWorld());
-        await loader.loadStream({
-          streamId: "8f8ced29b4",
-          objectId: "f22627d137"
-        });
-
-        app.on("select", (event) => {
-          const selectedId = event?.data?.[0];
-          if (selectedId) {
-            window.parent.postMessage(
-              { type: "objectClicked", id: selectedId },
-              "*"
-            );
-          }
+        const Speckle = window.Speckle;
+        const app = new Speckle.ViewerApp(container);
+        app.init().then(() => {
+          const loader = new Speckle.SpeckleLoader(app.getWorld());
+          loader.loadStream({
+            streamId: "8f8ced29b4",
+            objectId: "f22627d137"
+          }).then(() => {
+            app.on("select", (event) => {
+              const selectedId = event?.data?.[0];
+              if (selectedId) {
+                window.parent.postMessage(
+                  { type: "objectClicked", id: selectedId },
+                  "*"
+                );
+              }
+            });
+          });
         });
       };
       document.head.appendChild(script);
