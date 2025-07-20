@@ -19,16 +19,17 @@
   <body>
     <div id="renderer"></div>
 
-    <!-- Carrega o script externamente e só inicia depois de carregado -->
+    <!-- Carrega o Speckle Viewer UMD dinamicamente -->
     <script>
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.umd.js";
       script.onload = async () => {
         const container = document.getElementById("renderer");
-        const app = new Speckle.ViewerApp(container);
+        const app = new window.Speckle.ViewerApp(container); // Agora garantido
+
         await app.init();
 
-        const loader = new Speckle.SpeckleLoader(app.getWorld());
+        const loader = new window.Speckle.SpeckleLoader(app.getWorld());
         await loader.loadStream({
           streamId: "8f8ced29b4",
           objectId: "f22627d137"
