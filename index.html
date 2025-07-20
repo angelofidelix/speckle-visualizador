@@ -1,47 +1,38 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Visualizador Speckle 3D</title>
-    <style>
-      html, body {
-        margin: 0; height: 100%; width: 100%; overflow: hidden;
-      }
-      #renderer {
-        width: 100%; height: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="renderer"></div>
-
-    <script>
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.umd.js";
-      script.onload = function() {
-        const container = document.getElementById("renderer");
-        const Speckle = window.Speckle;
-        const app = new Speckle.ViewerApp(container);
-        app.init().then(() => {
-          const loader = new Speckle.SpeckleLoader(app.getWorld());
-          loader.loadStream({
-            streamId: "8f8ced29b4",
-            objectId: "f22627d137"
-          }).then(() => {
-            app.on("select", (event) => {
-              const selectedId = event?.data?.[0];
-              if (selectedId) {
-                window.parent.postMessage(
-                  { type: "objectClicked", id: selectedId },
-                  "*"
-                );
-              }
-            });
-          });
+<script>
+  const script = document.createElement("script");
+  script.src = "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.umd.js";
+  script.onload = function() {
+    console.log("Speckle script carregado");
+    const container = document.getElementById("renderer");
+    const Speckle = window.Speckle;
+    const app = new Speckle.ViewerApp(container);
+    app.init().then(() => {
+      console.log("App inicializado");
+      const loader = new Speckle.SpeckleLoader(app.getWorld());
+      loader.loadStream({
+        streamId: "8f8ced29b4",
+        objectId: "f22627d137"
+      }).then(() => {
+        console.log("Modelo carregado");
+        app.on("select", (event) => {
+          const selectedId = event?.data?.[0];
+          if (selectedId) {
+            window.parent.postMessage(
+              { type: "objectClicked", id: selectedId },
+              "*"
+            );
+          }
         });
-      };
-      document.head.appendChild(script);
-    </script>
-  </body>
-</html>
+      }).catch(e => {
+        console.error("Erro ao carregar modelo:", e);
+      });
+    }).catch(e => {
+      console.error("Erro ao inicializar app:", e);
+    });
+  };
+  script.onerror = () => {
+    console.error("Erro ao carregar o script do Speckle");
+  };
+  document.head.appendChild(script);
+</script>
 
