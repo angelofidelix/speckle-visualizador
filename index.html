@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Visualizador Speckle 3D</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      #renderer {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script type="module">
+      import {
+        ViewerApp,
+        DefaultViewerParams,
+        SpeckleLoader,
+      } from "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.18.2/build/viewer.min.js";
+
+      window.onload = async () => {
+        const container = document.getElementById("renderer");
+        const app = new ViewerApp(container);
+        await app.init();
+
+        const loader = new SpeckleLoader(app.getWorld());
+        await loader.loadStream({
+          streamId: "8f8ced29b4",      // <-- substitua se for outro ID
+          objectId: "f22627d137"       // <-- substitua se for outro objeto
+        });
+
+        // Quando clicar num objeto 3D
+        app.on("select", (event) => {
+          const selectedId = event?.data?.[0]; // ID do objeto selecionado
+          if (selectedId) {
+            // Envia via postMessage para o parent (iframe ou quem estiver escutando)
+            window.parent.postMessage(
+              { type: "objectClicked", id: selectedId },
+              "*"
+            );
+          }
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <div id="renderer"></div>
+  </body>
+</html>
